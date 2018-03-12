@@ -1,0 +1,15 @@
+{
+  "name": "elm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "elm": "^0.18.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+      "elm-reactor": "elm-reactor -a 0.0.0.0 -p 20322"
+  },
+  "author": "",
+  "license": "ISC"
+}
