@@ -21,8 +21,8 @@ init =
     (
         {
             text = "foo",
-            card = Card "JTMS" "Win the game",
-            deck = List.map (\num -> Card "Card" (toString num)) (List.range 0 52),
+            card = Card "JTMS" "Win the game" "1pow" "$2" "3pt",
+            deck = List.map (\num -> Card "Card" (toString num) "1pow" "$2" "3pt") (List.range 0 52),
             hand = [],
             messages = []
         },
@@ -45,20 +45,21 @@ type Msg =
 
 view: Model -> Html Msg
 view model =
-    List.indexedMap
-        (\index card -> renderCard card (Just (PlayFromHand index)))
-        model.hand
-    |> List.append
-        (
-            List.append
+    div []
+        (List.append
+            (List.append
                 [
                     text model.text,
                     (renderCard model.card Nothing),
                     button [onClick Draw] [text "Draw!"]
                 ]
                 (List.map (\msgText -> div [] [text msgText]) model.messages)
+            )
+            (List.indexedMap
+                (\index card -> renderCard card (Just (PlayFromHand index)))
+                model.hand
+            )
         )
-    |> div []
 
 
 -- UPDATE
