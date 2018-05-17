@@ -1,30 +1,26 @@
 module Main exposing (..)
 
-import Card exposing (Card, renderCard)
+import Card exposing (Card(..), renderCard, CardFace)
+import Player.View exposing (renderPlayer)
+import Player.Types exposing (Player, PlayerId(..))
+import Message exposing (Msg(..))
 import Html exposing (Html, div, text, program, button)
-import Html.Events exposing (onClick)
 import WebSocket
 
 
 -- MODEL
 
 type alias Model = {
-    text: String,
-    card: Card,
-    deck: List Card,
-    hand: Hand,
-    messages: List String
+    player: Player,
+    myId: PlayerId
 }
 
 init: (Model, Cmd Msg)
 init =
     (
         {
-            text = "foo",
-            card = Card "JTMS" "Win the game" "1pow" "$2" "3pt",
-            deck = List.map (\num -> Card "Card" (toString num) "1pow" "$2" "3pt") (List.range 0 52),
-            hand = [],
-            messages = []
+            player = Player (List.map (\num -> Card.Front (CardFace "Card" (toString num) "1pow" "$2" "3pt")) (List.range 0 5)) 0 0 (Alpha),
+            myId = Alpha
         },
         WebSocket.send "ws://unixdeva22:30322/" "foo"
     )
@@ -32,33 +28,17 @@ init =
 type alias Hand = List Card
 
 
--- MESSAGES
-
-type Msg =
-    NoOp |
-    Draw |
-    PlayFromHand Int |
-    WsMsg String
-
-
 -- VIEW
 
 view: Model -> Html Msg
 view model =
     div []
-        (List.append
-            (List.append
-                [
-                    text model.text,
-                    (renderCard model.card Nothing),
-                    button [onClick Draw] [text "Draw!"]
-                ]
-                (List.map (\msgText -> div [] [text msgText]) model.messages)
-            )
-            (List.indexedMap
-                (\index card -> renderCard card (Just (PlayFromHand index)))
-                model.hand
-            )
+        (
+            (renderPlayer model.player model.myId) ::
+            (renderPlayer model.player Beta) ::
+            (renderPlayer model.player Gamma) ::
+            (renderPlayer model.player Delta) ::
+            []
         )
 
 
@@ -69,34 +49,14 @@ update msg model =
   case msg of
     NoOp ->
         (model, Cmd.none)
-    Draw ->
-        (
-          case model.deck of
-            head :: rest ->
-                {
-                    model |
-                    hand = head :: model.hand,
-                    deck = rest
-                }
-            [] ->
-                model,
-
-            WebSocket.send "ws://unixdeva22:30322" "draw"
-        )
-    PlayFromHand index ->
-        (
-            {
-                model |
-                text = toString index
-            },
-            Cmd.none
-        )
     WsMsg txt ->
         (
-            {
-                model |
-                messages = txt :: model.messages
-            },
+            model,
+            Cmd.none
+        )
+    PlayMsg player index ->
+        (
+            model,
             Cmd.none
         )
 

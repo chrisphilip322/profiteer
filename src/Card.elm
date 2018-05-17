@@ -1,10 +1,14 @@
-module Card exposing (Card, renderCard)
+module Card exposing (Card(..), renderCard, CardFace)
 
-import Html exposing (Html, div, text, Attribute, button)
+import Html exposing (Html, div, br, text, Attribute, button)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (style)
 
-type alias Card = {
+type Card =
+    Back |
+    Front CardFace
+
+type alias CardFace = {
     name: String,
     body: String,
     powerCost: String,
@@ -15,29 +19,35 @@ type alias Card = {
 renderCard: Card -> Maybe msg -> Html msg
 renderCard card maybe_play =
     div [ cardStyle ]
-        [
-            div []
-                [
-                    div [ leftSideStyle ] [ text card.name ],
-                    div [ rightSideStyle ] [ text card.powerCost ]
-                ],
-            div [ bodyStyle ]
-                (List.append
-                    [ text card.body ]
-                    (
-                      case maybe_play of
-                        Just play ->
-                            [ button [ onClick play ] [ text "Play" ] ]
-                        Nothing ->
-                            []
-                    )
-                ),
-            div [ bottomRowStyle ]
-                [
-                    div [ leftSideStyle ] [ text card.moneyCost ],
-                    div [ rightSideStyle ] [ text card.pointValue ]
-                ]
-        ]
+      (case card of
+        Front face ->
+            [
+                div []
+                    [
+                        div [ leftSideStyle ] [ text face.name ],
+                        div [ rightSideStyle ] [ text face.powerCost ]
+                    ],
+                div [ bodyStyle ]
+                    (List.append
+                        [ text face.body ]
+                        (
+                          case maybe_play of
+                            Just play ->
+                                [ button [ onClick play ] [ text "Play" ] ]
+                            Nothing ->
+                                []
+                        )
+                    ),
+                div [ bottomRowStyle ]
+                    [
+                        div [ leftSideStyle ] [ text face.moneyCost ],
+                        div [ rightSideStyle ] [ text face.pointValue ]
+                    ]
+            ]
+        Back ->
+            [ br [] [] ] -- empty div renders differently than div with something
+                         -- so this <br/> just makes the div render normally
+      )
 
 cardStyle: Attribute msg
 cardStyle =
@@ -46,7 +56,8 @@ cardStyle =
         ("height", "300px"),
         ("display", "inline-block"),
         ("border", "1px solid black"),
-        ("position", "relative")
+        ("position", "relative"),
+        ("text-align", "left")
     ]
 
 leftSideStyle: Attribute msg
