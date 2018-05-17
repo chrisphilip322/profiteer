@@ -3,6 +3,7 @@ module Main exposing (..)
 import Card exposing (Card, renderCard)
 import Html exposing (Html, div, text, program, button)
 import Html.Events exposing (onClick)
+import WebSocket
 
 
 -- MODEL
@@ -12,6 +13,7 @@ type alias Model =
   , card: Card
   , deck: List Card
   , hand: Hand
+  , messages: List String
   }
 
 init: (Model, Cmd Msg)
@@ -20,8 +22,9 @@ init =
     , card = Card "JTMS" "Win the game"
     , deck = List.map (\num -> Card "Card" (toString num)) (List.range 0 52)
     , hand = []
+    , messages = []
     }
-  , Cmd.none
+  , WebSocket.send "ws://unixdeva22:30322/" "foo"
   )
 
 type alias Hand = List Card
@@ -33,6 +36,7 @@ type Msg
   = NoOp
   | Draw
   | PlayFromHand Int
+  | WsMsg String
 
 
 -- VIEW
@@ -40,11 +44,12 @@ type Msg
 view: Model -> Html Msg
 view model =
   List.indexedMap (\index card -> renderCard card (Just (PlayFromHand index))) model.hand
-   |> List.append
+   |> List.append (List.append
         [ text model.text
         , (renderCard model.card Nothing)
         , button [onClick Draw] [text "Draw!"]
         ]
+        (List.map (\msgText -> div [] [text msgText]) model.messages))
    |> div []
 
 
@@ -64,7 +69,7 @@ update msg model =
             }
           [] ->
             model
-      , Cmd.none
+      , WebSocket.send "ws://unixdeva22:30322" "draw"
       )
     PlayFromHand index ->
       ( { model
@@ -72,13 +77,19 @@ update msg model =
         }
       , Cmd.none
       )
+    WsMsg txt ->
+      ( { model |
+          messages = txt :: model.messages
+        },
+        Cmd.none
+      )
 
 
 -- SUBSCRIPTIONS
 
 subscriptions: Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  WebSocket.listen "ws://unixdeva22:30322" WsMsg
 
 
 -- MAIN
