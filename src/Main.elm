@@ -19,7 +19,7 @@ init: (Model, Cmd Msg)
 init =
     (
         {
-            player = Player (List.map (\num -> Card.Front (CardFace "Card" (toString num) "1pow" "$2" "3pt")) (List.range 0 5)) 0 0 (Alpha),
+            player = Player (List.map (\num -> Card.Front (CardFace "Card" (toString num) "1pow" "$2" "3pt")) (List.range 0 5)) 0 0 (Alpha) 0 0 0 0,
             myId = Alpha
         },
         WebSocket.send "ws://unixdeva22:30322/" "foo"

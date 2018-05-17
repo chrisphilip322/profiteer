@@ -14,7 +14,7 @@ renderPlayer player myId =
         ]
         (List.append
             (
-                (div [] [text "foo"]) ::
+                (div [] [text (renderResources player)]) ::
                 (renderDeck player) ::
                 (renderHand player myId)
             )
@@ -49,6 +49,13 @@ renderDeck player =
         [
             text ("deck(" ++ toString player.deck ++ ")")
         ]
+
+renderResources: Player -> String
+renderResources player =
+    "Money(" ++ toString player.money ++
+    ") Power(" ++ toString player.power ++
+    ") Influence(" ++ toString player.influence ++
+    ") Batteries(" ++ toString player.batteries ++ ")"
 
 renderDiscard: Player -> Html Msg
 renderDiscard player =
