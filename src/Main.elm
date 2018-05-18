@@ -1,8 +1,9 @@
 module Main exposing (..)
 
 import Card exposing (Card(..), renderCard, CardFace)
-import Player.View exposing (renderPlayer)
 import Player.Types exposing (Player, PlayerId(..))
+import Game.Types exposing (Game)
+import Game.View exposing (renderGame)
 import Message exposing (Msg(..))
 import Html exposing (Html, div, text, program, button)
 import WebSocket
@@ -11,15 +12,18 @@ import WebSocket
 -- MODEL
 
 type alias Model = {
-    player: Player,
-    myId: PlayerId
+    game : Game,
+    myId : PlayerId
 }
 
 init: (Model, Cmd Msg)
 init =
     (
         {
-            player = Player (List.map (\num -> Card.Front (CardFace "Card" (toString num) "1pow" "$2" "3pt")) (List.range 0 5)) 0 0 (Alpha) 0 0 0 0,
+            game = Game
+                Alpha
+                (List.map playerFactory [Alpha, Beta, Gamma, Delta])
+                (List.map (\num -> Card.Front (CardFace "Card" (toString num) "1pow" "$2" "3pt")) (List.range 0 5)),
             myId = Alpha
         },
         WebSocket.send "ws://unixdeva22:30322/" "foo"
@@ -27,19 +31,15 @@ init =
 
 type alias Hand = List Card
 
+playerFactory id =
+    Player (List.map (\num -> Card.Front (CardFace "Card" (toString num) "1pow" "$2" "3pt")) (List.range 0 5)) 0 0 id 0 0 0 0
+
 
 -- VIEW
 
 view: Model -> Html Msg
 view model =
-    div []
-        (
-            (renderPlayer model.player model.myId) ::
-            (renderPlayer model.player Beta) ::
-            (renderPlayer model.player Gamma) ::
-            (renderPlayer model.player Delta) ::
-            []
-        )
+    renderGame model.game model.myId
 
 
 -- UPDATE
@@ -48,6 +48,8 @@ update: Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     NoOp ->
+        (model, Cmd.none)
+    PassTurn ->
         (model, Cmd.none)
     WsMsg txt ->
         (

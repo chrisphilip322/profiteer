@@ -1,5 +1,6 @@
-module Card exposing (Card(..), renderCard, CardFace)
+module Card exposing (Card(..), renderCard, CardFace, cardDecoder)
 
+import Json.Decode exposing (Decoder, andThen, succeed, fail, map5, string)
 import Html exposing (Html, div, br, text, Attribute, button)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (style)
@@ -15,6 +16,25 @@ type alias CardFace = {
     moneyCost: String,
     pointValue: String
 }
+
+cardDecoder: Decoder Card
+cardDecoder =
+    let
+        convert : CardFace -> Decoder Card
+        convert raw =
+            succeed (Front raw)
+    in
+        cardFaceDecoder |> andThen convert
+
+cardFaceDecoder : Decoder CardFace
+cardFaceDecoder =
+    Json.Decode.map5
+        CardFace
+        (Json.Decode.field "name" Json.Decode.string)
+        (Json.Decode.field "body" Json.Decode.string)
+        (Json.Decode.field "powerCost" Json.Decode.string)
+        (Json.Decode.field "moneyCost" Json.Decode.string)
+        (Json.Decode.field "pointValue" Json.Decode.string)
 
 renderCard: Card -> Maybe msg -> Html msg
 renderCard card maybe_play =

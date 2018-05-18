@@ -7,4 +7,5 @@ import Player.Types exposing (Player)
 type Msg =
     NoOp |
     WsMsg String |
-    PlayMsg Player Int
+    PlayMsg Player Int |
+    PassTurn
