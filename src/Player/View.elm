@@ -28,7 +28,7 @@ renderHand player myId =
             renderCard card
                 (
                     if player.id == myId then
-                        Just (PlayMsg player index)
+                        Just (PlayMsg index)
                     else
                         Nothing
                 )

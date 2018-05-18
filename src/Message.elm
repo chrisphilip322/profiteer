@@ -1,11 +1,7 @@
-module Message exposing (..)
-
-import Player.Types exposing (Player)
-
--- MESSAGES
+module Message exposing (Msg(..))
 
 type Msg =
     NoOp |
     WsMsg String |
-    PlayMsg Player Int |
+    PlayMsg Int |
     PassTurn

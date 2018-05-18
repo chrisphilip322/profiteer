@@ -24,17 +24,12 @@ init =
         {
             game = Game
                 Alpha
-                (List.map playerFactory [Alpha, Beta, Gamma, Delta])
-                (List.map (\num -> Card.Front (CardFace "Card" (toString num) "1pow" "$2" "3pt")) (List.range 0 5)),
+                []
+                [],
             myId = Alpha
         },
-        WebSocket.send wsUrl "foo"
+        WebSocket.send wsUrl "connect"
     )
-
-type alias Hand = List Card
-
-playerFactory id =
-    Player (List.map (\num -> Card.Front (CardFace "Card" (toString num) "1pow" "$2" "3pt")) (List.range 0 5)) 0 0 id 0 0 0 0
 
 
 -- VIEW
@@ -52,7 +47,7 @@ update msg model =
     NoOp ->
         (model, Cmd.none)
     PassTurn ->
-        (model, Cmd.none)
+        (model, WebSocket.send wsUrl ("PassTurn " ++ toString model.myId))
     WsMsg txt ->
         (
             {
@@ -69,10 +64,10 @@ update msg model =
             },
             Cmd.none
         )
-    PlayMsg player index ->
+    PlayMsg index ->
         (
             model,
-            Cmd.none
+            WebSocket.send wsUrl ("PlayCard " ++ toString index)
         )
 
 
