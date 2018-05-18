@@ -1,6 +1,5 @@
 module Main exposing (..)
 
-import Card exposing (Card(..), renderCard, CardFace)
 import Player.Types exposing (Player, PlayerId(..))
 import Game.Types exposing (Game)
 import Game.View exposing (renderGame)

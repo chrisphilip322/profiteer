@@ -1,7 +1,7 @@
 module Player.View exposing (..)
 
 import Player.Types exposing (Player, PlayerId(..))
-import Card exposing (renderCard)
+import Card.View exposing (renderCard)
 import Message exposing (Msg(PlayMsg))
 import Html exposing (Html, div, text, Attribute, button)
 import Html.Attributes exposing (style)

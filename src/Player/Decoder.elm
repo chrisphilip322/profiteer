@@ -1,6 +1,6 @@
 module Player.Decoder exposing (playerDecoder, playerIdDecoder)
 
-import Card exposing (Card, cardDecoder)
+import Card.Decode exposing (cardDecoder)
 import Player.Types exposing (Player, PlayerId(..))
 import Json.Decode exposing (..)
 

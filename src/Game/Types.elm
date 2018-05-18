@@ -1,6 +1,6 @@
 module Game.Types exposing (..)
 
-import Card exposing (Card)
+import Card.Types exposing (Card)
 import Player.Types exposing (Player, PlayerId)
 
 type alias Game = {

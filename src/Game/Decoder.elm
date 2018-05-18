@@ -2,7 +2,7 @@ module Game.Decoder exposing (..)
 
 import Game.Types exposing (..)
 import Player.Decoder exposing (..)
-import Card exposing (..)
+import Card.Decode exposing (cardDecoder)
 
 import Json.Decode exposing (..)
 

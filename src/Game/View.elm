@@ -1,7 +1,8 @@
 module Game.View exposing (..)
 
 import Message exposing (Msg(PassTurn))
-import Card exposing (Card, renderCard)
+import Card.Types exposing (Card)
+import Card.View exposing (renderCard)
 import Game.Types exposing (..)
 import Player.Types exposing (PlayerId)
 import Player.View exposing (..)
