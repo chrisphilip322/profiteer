@@ -1,4 +1,4 @@
-module Player.Decoder exposing (playerDecoder)
+module Player.Decoder exposing (playerDecoder, playerIdDecoder)
 
 import Card exposing (Card, cardDecoder)
 import Player.Types exposing (Player, PlayerId(..))
