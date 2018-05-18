@@ -1,13 +1,13 @@
 module Main exposing (..)
 
-import Player.Types exposing (Player, PlayerId(..))
+import Connection exposing (..)
+import Player.Types exposing (PlayerId(Alpha))
 import Game.Types exposing (Game)
 import Game.View exposing (renderGame)
 import Game.Decoder exposing (gameDecoder)
 import Message exposing (Msg(..))
-import Html exposing (Html, div, text, program, button)
-import WebSocket
-import Json.Decode exposing (..)
+import Html exposing (Html, program)
+import Json.Decode exposing (decodeString)
 
 
 -- MODEL
@@ -27,7 +27,7 @@ init =
                 [],
             myId = Alpha
         },
-        WebSocket.send wsUrl "connect"
+        Connection.connect
     )
 
 
@@ -46,7 +46,7 @@ update msg model =
     NoOp ->
         (model, Cmd.none)
     PassTurn ->
-        (model, WebSocket.send wsUrl ("PassTurn " ++ toString model.myId))
+        (model, Connection.passTurn model.myId)
     WsMsg txt ->
         (
             {
@@ -57,16 +57,16 @@ update msg model =
                     in
                         case result of
                             Ok val ->
-                                Debug.log "succ" val
+                                val
                             Err e ->
-                                Tuple.first (model.game, (Debug.log "problemo" e))
+                                model.game
             },
             Cmd.none
         )
     PlayMsg index ->
         (
             model,
-            WebSocket.send wsUrl ("PlayCard " ++ toString index)
+            Connection.playCard index model.myId
         )
 
 
@@ -74,7 +74,7 @@ update msg model =
 
 subscriptions: Model -> Sub Msg
 subscriptions model =
-    WebSocket.listen wsUrl WsMsg
+    Connection.subscribe
 
 
 -- MAIN
@@ -88,7 +88,3 @@ main =
             update = update,
             subscriptions = subscriptions
         }
-
-wsUrl : String
-wsUrl =
-    "ws://unixdeva22:30322"
